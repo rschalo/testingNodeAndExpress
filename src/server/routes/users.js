@@ -64,3 +64,30 @@ router.post('/', (req, res, next) => {
         });
     });
 });
+
+router.put('/:id', (req, res, next) => {
+  const userID = parseInt(req.params.id);
+  const updatedUsername = req.body.username;
+  const updatedEmail = req.body.email;
+  knex('users')
+    .update({
+      username: updatedUsername,
+      email: updatedEmail
+    })
+    .where({
+      id: userID
+    })
+    .returning('*')
+    .then((user) => {
+      res.status(200).json({
+        status: 'success',
+        data: user
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: 'error',
+        data: err
+      });
+    });
+});
