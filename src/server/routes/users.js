@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const knex = require('../db/knex');
+const { filterByYear } = require('../controllers/users');
 
 module.exports = router;
 
@@ -29,6 +30,26 @@ router.get('/:id', (req, res, next) => {
       res.status(200).json({
         status: 'success',
         data: user
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        status: 'error',
+        data: err
+      });
+    });
+});
+
+router.get('/:year', (req, res, next) => {
+  const filteringYear = req.params.year;
+  knex('users')
+    .select('*')
+    .then((users) => {
+      const filteredUsers = filterByYear(users, filteringYear);
+      console.log(filteredUsers);
+      res.status(200).json({
+        status: 'success',
+        data: filteredUsers
       });
     })
     .catch((err) => {

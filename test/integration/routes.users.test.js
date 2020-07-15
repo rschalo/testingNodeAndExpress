@@ -157,6 +157,7 @@ describe('routes : users', () => {
         });
     });
   });
+
   describe('DELETE /api/v1/users/:id', () => {
     it('should respond with a success message along with a single user that was deleted', (done) => {
       knex('users')
@@ -194,6 +195,29 @@ describe('routes : users', () => {
                 });
             });
         });
+    });
+  });
+
+  describe('GET /api/v1/users/:year', () => {
+    it('should respond with an array of users filtered after the year and respond with a message of those users', (done) => {
+      chai
+        .request(server)
+        .delete('/api/v1/users/2020')
+        .end((err, res) => {
+          // there should be no errors
+          should.not.exist(err);
+          // there should be a 200 status code
+          res.status.should.equal(200);
+          // the response should be JSON
+          res.type.should.equal('application/json');
+          // the JSON response body should have a
+          // key-value pair of {"status": "success"}
+          res.body.status.should.eql('success');
+          // the JSON response body should have a
+          // key-value pair of {"data": [0 user objects]}
+          res.body.data.length.should.eql(0);
+        });
+      done();
     });
   });
 
