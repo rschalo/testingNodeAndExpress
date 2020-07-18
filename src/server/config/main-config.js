@@ -1,8 +1,8 @@
-(function(appConfig) {
-
+(function (appConfig) {
   'use strict';
 
   // *** main dependencies *** //
+  const expressValidator = require('express-validator');
   const path = require('path');
   const cookieParser = require('cookie-parser');
   const bodyParser = require('body-parser');
@@ -12,15 +12,12 @@
   const nunjucks = require('nunjucks');
 
   // *** view folders *** //
-  const viewFolders = [
-    path.join(__dirname, '..', 'views')
-  ];
+  const viewFolders = [path.join(__dirname, '..', 'views')];
 
   // *** load environment variables *** //
   require('dotenv').config();
 
-  appConfig.init = function(app, express) {
-
+  appConfig.init = function (app, express) {
     // *** view engine *** //
     nunjucks.configure(viewFolders, {
       express: app,
@@ -35,6 +32,7 @@
     app.use(cookieParser());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(expressValidator());
     // // uncomment if using express-session
     // app.use(session({
     //   secret: process.env.SECRET_KEY,
@@ -43,7 +41,5 @@
     // }));
     app.use(flash());
     app.use(express.static(path.join(__dirname, '..', '..', 'client')));
-
   };
-
 })(module.exports);

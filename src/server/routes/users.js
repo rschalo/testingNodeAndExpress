@@ -1,46 +1,64 @@
 const express = require('express');
 const router = express.Router();
-
+const validate = require('./validation');
 const knex = require('../db/knex');
 const { filterByYear } = require('../controllers/users');
+const queriesUsers = require('../db/queries.users');
 
 module.exports = router;
 
 router.get('/', (req, res, next) => {
-  knex('users')
-    .select('*')
-    .then((users) => {
+  queriesUsers.getAllUsers((err, users) => {
+    if (err) {
+      res.status(500).json({
+        status: 'error',
+        data: err
+      });
+    } else {
       res.status(200).json({
         status: 'success',
         data: users
       });
-    })
-    .catch((err) => {
+    }
+  });
+});
+
+router.get('/:id', validate.validateUserResources, (req, res, next) => {
+  const { id } = req.params;
+  queriesUsers.getAUser(id, (err, user) => {
+    if (err) {
       res.status(500).json({
         status: 'error',
         data: err
       });
-    });
-});
-
-router.get('/:id', (req, res, next) => {
-  knex('users')
-    .where({ id: req.params.id })
-    .then((user) => {
+    } else {
       res.status(200).json({
         status: 'success',
         data: user
       });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        status: 'error',
-        data: err
-      });
-    });
+    }
+  });
 });
 
-router.get('/:year', (req, res, next) => {
+//   knex('users')
+//     .where({ id: req.params.id })
+//     .then((user) =>
+//       res
+//         .status(200)
+//         .json({
+//           status: 'success',
+//           data: user
+//         })
+//         .catch((err) => {
+//           res.status(500).json({
+//             status: 'error',
+//             data: err
+//           });
+//         })
+//     );
+// });
+
+router.get('/:year', validate.validateUserResources, (req, res, next) => {
   const filteringYear = req.params.year;
   knex('users')
     .select('*')
@@ -60,7 +78,7 @@ router.get('/:year', (req, res, next) => {
     });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', validate.validateUserResources, (req, res, next) => {
   const newUsername = req.body.username;
   const newEmail = req.body.email;
   knex('users')
@@ -83,7 +101,7 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', validate.validateUserResources, (req, res, next) => {
   const userID = parseInt(req.params.id);
   const updatedUsername = req.body.username;
   const updatedEmail = req.body.email;
@@ -109,7 +127,7 @@ router.put('/:id', (req, res, next) => {
       });
     });
 });
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', validate.validateUserResources, (req, res, next) => {
   const userID = parseInt(req.params.id);
   knex('users')
     .del()
