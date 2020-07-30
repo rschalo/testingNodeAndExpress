@@ -23,7 +23,40 @@ function getAUser(userID, callback) {
     });
 }
 
+function createUser(newUsername, newEmail) {
+  return knex('users')
+    .insert({
+      username: newUsername,
+      email: newEmail
+    })
+    .returning('*');
+}
+
+function updateUser(updatedUsername, updatedEmail, userID) {
+  return knex('users')
+    .update({
+      username: updatedUsername,
+      email: updatedEmail
+    })
+    .where({
+      id: userID
+    })
+    .returning('*');
+}
+
+function deleteUser(userID) {
+  return knex('users')
+    .del()
+    .where({
+      id: userID
+    })
+    .returning('*');
+}
+
 module.exports = {
   getAllUsers,
-  getAUser
+  getAUser,
+  createUser,
+  updateUser,
+  deleteUser
 };
